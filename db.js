@@ -1,16 +1,35 @@
 // import sequelize, { Sequelize } from "sequelize";
+// const config = require('./libs/config.js');
 const Sequelize = require('sequelize');
-const config = require('./libs/config.js');
-let sequelize = null;
+const fs = require('fs');
+const path = require('path');
 
-module.exports = () => {
-    if (!sequelize) {
-        sequelize = new Sequelize (
+// let sequelize = null;
+let db = null;
+
+module.exports = app => {
+    if (!db) {
+        const config = app.libs.config;
+        const sequelize = new Sequelize(
             config.database,
             config.username,
             config.password,
             config.params
         );
+    db = {
+        sequelize,
+        Sequelize,
+        models: {}
+    };
+    const dir = path.join(__dirname, "models");
+    fs.readdirSync(dir).forEach(file => {
+        const modelDir = path.join(dir, file);
+        const model = sequelize.import(modelDir);
+        db.models[model.name] = model;
+    });
+    Object.keys(db.models).forEach(key => {
+        db.models[key].associate(db.models);
+    });
     }
-    return sequelize;
+    return db;
 }
