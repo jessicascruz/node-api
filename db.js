@@ -1,10 +1,7 @@
-// import sequelize, { Sequelize } from "sequelize";
-// const config = require('./libs/config.js');
 const Sequelize = require('sequelize');
 const fs = require('fs');
 const path = require('path');
 
-// let sequelize = null;
 let db = null;
 
 module.exports = app => {
